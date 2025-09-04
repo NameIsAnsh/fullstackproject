@@ -20,7 +20,7 @@ app.use(cors({
 app.use(express.json());
 
 const PORT = process.env.PORT || 4000;
-const URI = process.env.MONGODB_URI; // 🔑 double-check this name in .env
+const URI = process.env.MongoDBURI; // 🔑 double-check this name in .env
 
 // MongoDB Connection
 const connectDB = async () => {
