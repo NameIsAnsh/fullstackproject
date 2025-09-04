@@ -6,31 +6,48 @@ import cors from "cors";
 import bookRoute from "./route/book.route.js";
 import userRoute from "./route/user.route.js";
 
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-
 dotenv.config();
 
+const app = express();
+
+// ✅ CORS: allow only frontend domain in production
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "*", 
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
+app.use(express.json());
+
 const PORT = process.env.PORT || 4000;
-const URI = process.env.MongoDBURI;
+const URI = process.env.MONGODB_URI; // 🔑 double-check this name in .env
 
-// connect to mongoDB
-try {
-    mongoose.connect(URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
+// MongoDB Connection
+const connectDB = async () => {
+  try {
+    await mongoose.connect(URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
-    console.log("Connected to mongoDB");
-} catch (error) {
-    console.log("Error: ", error);
-}
+    console.log("✅ Connected to MongoDB");
+  } catch (error) {
+    console.error("❌ MongoDB connection error:", error.message);
+    process.exit(1); // stop app if DB fails
+  }
+};
 
-// defining routes
+connectDB();
+
+// Routes
 app.use("/book", bookRoute);
 app.use("/user", userRoute);
 
+// Health check
+app.get("/", (req, res) => {
+  res.send("API is running...");
+});
+
+// Start server
 app.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
