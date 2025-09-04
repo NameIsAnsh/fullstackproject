@@ -16,7 +16,7 @@ function Login() {
       password: data.password,
     };
     await axios
-      .post("https://fullstackproject-anfn.onrender.com/", userInfo)
+      .post("https://fullstackproject-anfn.onrender.com/user/login", userInfo)
       .then((res) => {
         console.log(res.data);
         if (res.data) {
